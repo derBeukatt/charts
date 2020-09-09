@@ -41,8 +41,7 @@ abstract class ChartCanvas {
   /// [fill] Fill color for the sector.
   /// [stroke] Stroke color of the arc and radius lines.
   /// [strokeWidthPx] Stroke width of the arc and radius lines.
-  void drawCircleSector(Point center, double radius, double innerRadius,
-      double startAngle, double endAngle,
+  void drawCircleSector(Point center, double radius, double innerRadius, double startAngle, double endAngle,
       {Color fill, Color stroke, double strokeWidthPx});
 
   /// Renders a simple line.
@@ -57,6 +56,7 @@ abstract class ChartCanvas {
       Rectangle<num> clipBounds,
       Color fill,
       Color stroke,
+      bool smoothLine,
       bool roundEndCaps,
       double strokeWidthPx,
       List<int> dashPattern});
@@ -75,12 +75,7 @@ abstract class ChartCanvas {
   /// [stroke] and [strokeWidthPx] configure the color and thickness of the
   /// outer edge of the point. Both must be provided together for a line to
   /// appear.
-  void drawPoint(
-      {Point point,
-      double radius,
-      Color fill,
-      Color stroke,
-      double strokeWidthPx});
+  void drawPoint({Point point, double radius, Color fill, Color stroke, double strokeWidthPx});
 
   /// Renders a polygon shape described by a set of points.
   ///
@@ -92,12 +87,7 @@ abstract class ChartCanvas {
   ///
   /// [stroke] and [strokeWidthPx] configure the color and thickness of the
   /// edges of the polygon. Both must be provided together for a line to appear.
-  void drawPolygon(
-      {List<Point> points,
-      Rectangle<num> clipBounds,
-      Color fill,
-      Color stroke,
-      double strokeWidthPx});
+  void drawPolygon({List<Point> points, Rectangle<num> clipBounds, Color fill, Color stroke, double strokeWidthPx});
 
   /// Renders a simple rectangle.
   ///
@@ -105,11 +95,7 @@ abstract class ChartCanvas {
   /// the draw area bounds on the top, the first x pixels (decided by the native
   /// platform) exceeding the draw area will apply a gradient to transparent
   /// with anything exceeding the x pixels to be transparent.
-  void drawRect(Rectangle<num> bounds,
-      {Color fill,
-      Color stroke,
-      double strokeWidthPx,
-      Rectangle<num> drawAreaBounds});
+  void drawRect(Rectangle<num> bounds, {Color fill, Color stroke, double strokeWidthPx, Rectangle<num> drawAreaBounds});
 
   /// Renders a rounded rectangle.
   void drawRRect(Rectangle<num> bounds,
@@ -134,11 +120,9 @@ abstract class ChartCanvas {
   /// the draw area bounds on the top, the first x pixels (decided by the native
   /// platform) exceeding the draw area will apply a gradient to transparent
   /// with anything exceeding the x pixels to be transparent.
-  void drawBarStack(CanvasBarStack canvasBarStack,
-      {Rectangle<num> drawAreaBounds});
+  void drawBarStack(CanvasBarStack canvasBarStack, {Rectangle<num> drawAreaBounds});
 
-  void drawText(TextElement textElement, int offsetX, int offsetY,
-      {double rotation = 0.0});
+  void drawText(TextElement textElement, int offsetX, int offsetY, {double rotation = 0.0});
 
   /// Request the canvas to clip to [clipBounds].
   ///

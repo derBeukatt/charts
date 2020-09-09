@@ -14,19 +14,18 @@
 // limitations under the License.
 
 import 'dart:math' show Point, Rectangle;
+
 import 'package:charts_common/src/chart/bar/bar_target_line_renderer.dart';
 import 'package:charts_common/src/chart/bar/bar_target_line_renderer_config.dart';
 import 'package:charts_common/src/chart/bar/base_bar_renderer.dart';
 import 'package:charts_common/src/chart/bar/base_bar_renderer_config.dart';
-import 'package:charts_common/src/chart/cartesian/cartesian_chart.dart';
 import 'package:charts_common/src/chart/cartesian/axis/axis.dart';
+import 'package:charts_common/src/chart/cartesian/cartesian_chart.dart';
 import 'package:charts_common/src/chart/common/chart_canvas.dart';
 import 'package:charts_common/src/chart/common/chart_context.dart';
-import 'package:charts_common/src/chart/common/processed_series.dart'
-    show MutableSeries;
+import 'package:charts_common/src/chart/common/processed_series.dart' show MutableSeries;
 import 'package:charts_common/src/common/color.dart';
 import 'package:charts_common/src/data/series.dart' show Series;
-
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -47,6 +46,7 @@ class MockCanvas extends Mock implements ChartCanvas {
       Rectangle<num> clipBounds,
       Color fill,
       Color stroke,
+      bool smoothLine,
       bool roundEndCaps,
       double strokeWidthPx,
       List<int> dashPattern}) {
@@ -65,8 +65,7 @@ void main() {
   /////////////////////////////////////////
   // Convenience methods for creating mocks.
   /////////////////////////////////////////
-  BaseBarRenderer _configureBaseRenderer(
-      BaseBarRenderer renderer, bool vertical) {
+  BaseBarRenderer _configureBaseRenderer(BaseBarRenderer renderer, bool vertical) {
     final context = MockContext();
     when(context.chartContainerIsRtl).thenReturn(false);
     when(context.isRtl).thenReturn(false);
@@ -130,9 +129,7 @@ void main() {
 
   group('preprocess', () {
     test('with grouped bar target lines', () {
-      renderer = makeRenderer(
-          config: BarTargetLineRendererConfig(
-              groupingType: BarGroupingType.grouped));
+      renderer = makeRenderer(config: BarTargetLineRendererConfig(groupingType: BarGroupingType.grouped));
 
       renderer.preprocessSeries(seriesList);
 
@@ -194,9 +191,7 @@ void main() {
     });
 
     test('with stacked bar target lines', () {
-      renderer = makeRenderer(
-          config: BarTargetLineRendererConfig(
-              groupingType: BarGroupingType.stacked));
+      renderer = makeRenderer(config: BarTargetLineRendererConfig(groupingType: BarGroupingType.stacked));
 
       renderer.preprocessSeries(seriesList);
 
@@ -267,9 +262,7 @@ void main() {
 
       seriesList[0].data[2] = MyRow('MyCampaign3', 0);
 
-      renderer = makeRenderer(
-          config: BarTargetLineRendererConfig(
-              groupingType: BarGroupingType.stacked));
+      renderer = makeRenderer(config: BarTargetLineRendererConfig(groupingType: BarGroupingType.stacked));
 
       renderer.preprocessSeries(seriesList);
 
@@ -367,9 +360,8 @@ void main() {
   });
 
   test('with stroke width target lines', () {
-    renderer = makeRenderer(
-        config: BarTargetLineRendererConfig(
-            groupingType: BarGroupingType.grouped, strokeWidthPx: 5.0));
+    renderer =
+        makeRenderer(config: BarTargetLineRendererConfig(groupingType: BarGroupingType.grouped, strokeWidthPx: 5.0));
 
     renderer.preprocessSeries(seriesList);
 
@@ -429,8 +421,7 @@ void main() {
   group('preprocess with weight pattern', () {
     test('with grouped bar target lines', () {
       renderer = makeRenderer(
-          config: BarTargetLineRendererConfig(
-              groupingType: BarGroupingType.grouped, weightPattern: [3, 2, 1]));
+          config: BarTargetLineRendererConfig(groupingType: BarGroupingType.grouped, weightPattern: [3, 2, 1]));
 
       renderer.preprocessSeries(seriesList);
 
@@ -497,8 +488,7 @@ void main() {
 
     test('with stacked bar target lines - weightPattern not used', () {
       renderer = makeRenderer(
-          config: BarTargetLineRendererConfig(
-              groupingType: BarGroupingType.stacked, weightPattern: [2, 1]));
+          config: BarTargetLineRendererConfig(groupingType: BarGroupingType.stacked, weightPattern: [2, 1]));
 
       renderer.preprocessSeries(seriesList);
 
@@ -614,9 +604,7 @@ void main() {
       ];
       final seriesListWithMeasures = _createSeriesList(myDataWithMeasures);
 
-      renderer = makeRenderer(
-          config: BarTargetLineRendererConfig(
-              groupingType: BarGroupingType.grouped));
+      renderer = makeRenderer(config: BarTargetLineRendererConfig(groupingType: BarGroupingType.grouped));
 
       // Verify that only 3 lines are drawn for an initial draw with null data.
       renderer.preprocessSeries(seriesListWithNull);

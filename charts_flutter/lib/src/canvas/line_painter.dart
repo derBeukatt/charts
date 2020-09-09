@@ -13,10 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:ui' as ui show Shader;
 import 'dart:math' show Point, Rectangle;
-import 'package:flutter/material.dart';
+import 'dart:ui' as ui show Shader;
+
 import 'package:charts_common/common.dart' as common show Color;
+import 'package:charts_flutter/src/util/monotonex.dart';
+import 'package:flutter/material.dart';
 
 /// Draws a simple line.
 ///
@@ -38,6 +40,7 @@ class LinePainter {
       Rectangle<num> clipBounds,
       common.Color fill,
       common.Color stroke,
+      bool smoothLine,
       bool roundEndCaps,
       double strokeWidthPx,
       List<int> dashPattern,
@@ -50,10 +53,7 @@ class LinePainter {
     if (clipBounds != null) {
       canvas
         ..save()
-        ..clipRect(new Rect.fromLTWH(
-            clipBounds.left.toDouble(),
-            clipBounds.top.toDouble(),
-            clipBounds.width.toDouble(),
+        ..clipRect(new Rect.fromLTWH(clipBounds.left.toDouble(), clipBounds.top.toDouble(), clipBounds.width.toDouble(),
             clipBounds.height.toDouble()));
     }
 
@@ -74,7 +74,9 @@ class LinePainter {
       paint.strokeJoin = StrokeJoin.round;
       paint.style = PaintingStyle.stroke;
 
-      if (dashPattern == null || dashPattern.isEmpty) {
+      if (smoothLine ?? false) {
+        _drawSmoothLine(canvas, paint, points);
+      } else if (dashPattern == null || dashPattern.isEmpty) {
         if (roundEndCaps == true) {
           paint.strokeCap = StrokeCap.round;
         }
@@ -90,12 +92,17 @@ class LinePainter {
     }
   }
 
+  /// Draws smooth lines between each point.
+  void _drawSmoothLine(Canvas canvas, Paint paint, List<Point> points) {
+    var path = MonotoneX.initPath(points);
+    canvas.drawPath(path, paint);
+  }
+
   /// Draws solid lines between each point.
   void _drawSolidLine(Canvas canvas, Paint paint, List<Point> points) {
     // TODO: Extract a native line component which constructs the
     // appropriate underlying data structures to avoid conversion.
-    final path = new Path()
-      ..moveTo(points.first.x.toDouble(), points.first.y.toDouble());
+    final path = new Path()..moveTo(points.first.x.toDouble(), points.first.y.toDouble());
 
     for (var point in points) {
       path.lineTo(point.x.toDouble(), point.y.toDouble());
@@ -105,8 +112,7 @@ class LinePainter {
   }
 
   /// Draws dashed lines lines between each point.
-  void _drawDashedLine(
-      Canvas canvas, Paint paint, List<Point> points, List<int> dashPattern) {
+  void _drawDashedLine(Canvas canvas, Paint paint, List<Point> points, List<int> dashPattern) {
     final localDashPattern = new List.from(dashPattern);
 
     // If an odd number of parts are defined, repeat the pattern to get an even
@@ -150,8 +156,7 @@ class LinePainter {
         var d = _getOffsetDistance(previousSeriesPoint, seriesPoint);
 
         while (d > 0) {
-          var dashSegment =
-              remainder > 0 ? remainder : getNextDashPatternSegment();
+          var dashSegment = remainder > 0 ? remainder : getNextDashPatternSegment();
           remainder = 0;
 
           // Create a unit vector in the direction from previous to next point.
@@ -176,8 +181,7 @@ class LinePainter {
               // pattern segment in the current line segment.
               remainderPoints.add(new Offset(nextPoint.dx, nextPoint.dy));
 
-              final path = new Path()
-                ..moveTo(remainderPoints.first.dx, remainderPoints.first.dy);
+              final path = new Path()..moveTo(remainderPoints.first.dx, remainderPoints.first.dy);
 
               for (var p in remainderPoints) {
                 path.lineTo(p.dx, p.dy);
@@ -230,8 +234,7 @@ class LinePainter {
   }
 
   /// Converts a [Point] into an [Offset].
-  Offset _getOffset(Point point) =>
-      new Offset(point.x.toDouble(), point.y.toDouble());
+  Offset _getOffset(Point point) => new Offset(point.x.toDouble(), point.y.toDouble());
 
   /// Computes the distance between two [Offset]s, as if they were [Point]s.
   num _getOffsetDistance(Offset o1, Offset o2) {

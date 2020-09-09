@@ -14,14 +14,12 @@
 // limitations under the License.
 
 import '../../common/symbol_renderer.dart';
-import '../common/series_renderer_config.dart'
-    show RendererAttributes, SeriesRendererConfig;
+import '../common/series_renderer_config.dart' show RendererAttributes, SeriesRendererConfig;
 import '../layout/layout_view.dart' show LayoutViewConfig, LayoutViewPaintOrder;
 import 'line_renderer.dart' show LineRenderer;
 
 /// Configuration for a line renderer.
-class LineRendererConfig<D> extends LayoutViewConfig
-    implements SeriesRendererConfig<D> {
+class LineRendererConfig<D> extends LayoutViewConfig implements SeriesRendererConfig<D> {
   final String customRendererId;
 
   final SymbolRenderer symbolRenderer;
@@ -67,6 +65,9 @@ class LineRendererConfig<D> extends LayoutViewConfig
   /// Configures the opacity of the area skirt on the chart.
   final double areaOpacity;
 
+  /// Draw smooth line in Line Chart
+  final bool smoothLine;
+
   /// Whether lines should have round end caps, or square if false.
   final bool roundEndCaps;
 
@@ -81,6 +82,7 @@ class LineRendererConfig<D> extends LayoutViewConfig
       this.includeArea = false,
       this.layoutPaintOrder = LayoutViewPaintOrder.line,
       this.areaOpacity = 0.1,
+      this.smoothLine = false,
       this.roundEndCaps = false,
       SymbolRenderer symbolRenderer})
       : this.symbolRenderer = symbolRenderer ?? LineSymbolRenderer();

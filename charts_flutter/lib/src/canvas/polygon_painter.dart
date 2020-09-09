@@ -14,8 +14,10 @@
 // limitations under the License.
 
 import 'dart:math' show Point, Rectangle;
-import 'package:flutter/material.dart';
+
 import 'package:charts_common/common.dart' as common show Color;
+import 'package:charts_flutter/src/util/monotonex.dart';
+import 'package:flutter/material.dart';
 
 /// Draws a simple line.
 ///
@@ -37,6 +39,7 @@ class PolygonPainter {
       Rectangle<num> clipBounds,
       common.Color fill,
       common.Color stroke,
+      bool smoothLine,
       double strokeWidthPx}) {
     if (points.isEmpty) {
       return;
@@ -46,20 +49,13 @@ class PolygonPainter {
     if (clipBounds != null) {
       canvas
         ..save()
-        ..clipRect(new Rect.fromLTWH(
-            clipBounds.left.toDouble(),
-            clipBounds.top.toDouble(),
-            clipBounds.width.toDouble(),
+        ..clipRect(new Rect.fromLTWH(clipBounds.left.toDouble(), clipBounds.top.toDouble(), clipBounds.width.toDouble(),
             clipBounds.height.toDouble()));
     }
 
-    final strokeColor = stroke != null
-        ? new Color.fromARGB(stroke.a, stroke.r, stroke.g, stroke.b)
-        : null;
+    final strokeColor = stroke != null ? new Color.fromARGB(stroke.a, stroke.r, stroke.g, stroke.b) : null;
 
-    final fillColor = fill != null
-        ? new Color.fromARGB(fill.a, fill.r, fill.g, fill.b)
-        : null;
+    final fillColor = fill != null ? new Color.fromARGB(fill.a, fill.r, fill.g, fill.b) : null;
 
     // If the line has a single point, draw a circle.
     if (points.length == 1) {
@@ -79,18 +75,34 @@ class PolygonPainter {
         paint.style = PaintingStyle.fill;
       }
 
-      final path = new Path()
-        ..moveTo(points.first.x.toDouble(), points.first.y.toDouble());
-
-      for (var point in points) {
-        path.lineTo(point.x.toDouble(), point.y.toDouble());
+      if (smoothLine ?? false) {
+        _drawSmoothPolygon(canvas, paint, points);
+      } else {
+        _drawSolidPolygon(canvas, paint, points);
       }
-
-      canvas.drawPath(path, paint);
     }
 
     if (clipBounds != null) {
       canvas.restore();
     }
+  }
+
+  /// Draws smooth lines between each point.
+  void _drawSmoothPolygon(Canvas canvas, Paint paint, List<Point> points) {
+    var path = MonotoneX.initPath(points);
+    canvas.drawPath(path, paint);
+  }
+
+  /// Draws solid lines between each point.
+  void _drawSolidPolygon(Canvas canvas, Paint paint, List<Point> points) {
+    // TODO: Extract a native line component which constructs the
+    // appropriate underlying data structures to avoid conversion.
+    final path = new Path()..moveTo(points.first.x.toDouble(), points.first.y.toDouble());
+
+    for (var point in points) {
+      path.lineTo(point.x.toDouble(), point.y.toDouble());
+    }
+
+    canvas.drawPath(path, paint);
   }
 }

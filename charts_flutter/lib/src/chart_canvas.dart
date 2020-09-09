@@ -114,7 +114,12 @@ class ChartCanvas implements common.ChartCanvas {
 
   @override
   void drawPolygon(
-      {List<Point> points, Rectangle<num> clipBounds, common.Color fill, common.Color stroke, double strokeWidthPx}) {
+      {List<Point> points,
+      Rectangle<num> clipBounds,
+      common.Color fill,
+      common.Color stroke,
+      bool smoothLine,
+      double strokeWidthPx}) {
     _polygonPainter ??= new PolygonPainter();
     _polygonPainter.draw(
         canvas: canvas,
@@ -123,6 +128,7 @@ class ChartCanvas implements common.ChartCanvas {
         clipBounds: clipBounds,
         fill: fill,
         stroke: stroke,
+        smoothLine: smoothLine,
         strokeWidthPx: strokeWidthPx);
   }
 

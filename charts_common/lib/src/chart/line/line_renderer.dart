@@ -884,9 +884,11 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
             .forEach((_AreaRendererElement area) {
           if (area != null) {
             canvas.drawPolygon(
-                clipBounds: _getClipBoundsForExtent(area.positionExtent),
-                fill: area.areaColor != null ? area.areaColor : area.color,
-                points: area.points);
+              clipBounds: _getClipBoundsForExtent(area.positionExtent),
+              fill: area.areaColor != null ? area.areaColor : area.color,
+              points: area.points,
+              smoothLine: config.smoothLine,
+            );
           }
         });
       }
@@ -900,9 +902,11 @@ class LineRenderer<D> extends BaseCartesianRenderer<D> {
             .forEach((_AreaRendererElement bound) {
           if (bound != null) {
             canvas.drawPolygon(
-                clipBounds: _getClipBoundsForExtent(bound.positionExtent),
-                fill: bound.areaColor != null ? bound.areaColor : bound.color,
-                points: bound.points);
+              clipBounds: _getClipBoundsForExtent(bound.positionExtent),
+              fill: bound.areaColor != null ? bound.areaColor : bound.color,
+              points: bound.points,
+              smoothLine: config.smoothLine,
+            );
           }
         });
       }
